@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Allow-list de emails autorizados a ler/escrever os dados compartilhados — EDITAR AQUI
+    // para adicionar/remover acesso, depois rodar: firebase deploy --only firestore:rules
+    function emailAutorizado() {
+      return request.auth != null &&
+        request.auth.token.email in [
+          'otaviocalderanadm@gmail.com',
+          'duda.dcaliari@gmail.com'
+        ];
+    }
+
+    // Documento único, compartilhado entre todas as contas autorizadas acima.
+    match /dados/compartilhado {
+      allow read, write: if emailAutorizado();
+    }
+  }
+}
